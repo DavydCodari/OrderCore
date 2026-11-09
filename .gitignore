@@ -1,0 +1,101 @@
+# Java / Gradle (root project and nested services)
+.gradle/
+.kotlin/
+build/
+out/
+*.class
+# Keep the Gradle wrapper tracked.
+!**/gradle/wrapper/gradle-wrapper.jar
+# Source packages may legitimately be named build or out.
+!**/src/**/build/
+!**/src/**/out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse / Spring Tool Suite
+.apt_generated/
+.apt_generated_tests/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+bin/
+!**/src/**/bin/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# VS Code local configuration
+.vscode/
+*.code-workspace
+
+# Environment variables and local secrets
+.env
+.env.*
+!**/.env.example
+!**/.env.sample
+!**/.env.template
+secrets/
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+# Keep shared configuration tracked; use these for local overrides.
+application-local.properties
+application-local.yml
+application-local.yaml
+application-*.local.properties
+application-*.local.yml
+application-*.local.yaml
+
+# Runtime logs and JVM diagnostic output
+logs/
+*.log
+*.pid
+*.pid.lock
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Local databases, uploaded files, and container volume data
+*.mv.db
+*.trace.db
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3-shm
+*.sqlite3-wal
+/data/
+/uploads/
+/volumes/
+**/docker/data/
+**/docker/volumes/
+# Commit Dockerfiles, Compose files, migrations, and seed scripts.
+
+# Temporary files and editor backups
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+*.orig
+
+# Operating system files
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/

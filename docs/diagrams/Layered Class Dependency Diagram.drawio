@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Сторінка-1" id="zjetMlFTulmjehXhvIhN">
-    <mxGraphModel dx="858" dy="588" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1493" dy="1022" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -126,8 +126,8 @@
         <mxCell id="HoKFMNN51XK2F71BvwmX-95" edge="1" parent="1" source="HoKFMNN51XK2F71BvwmX-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;labelPadding=0 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="HoKFMNN51XK2F71BvwmX-63">
           <mxGeometry relative="1" x="-0.1989" as="geometry">
             <Array as="points">
-              <mxPoint x="420" y="1063.6" />
-              <mxPoint x="700" y="1063.6" />
+              <mxPoint x="420" y="1020.8" />
+              <mxPoint x="700" y="1020.8" />
             </Array>
             <mxPoint x="420" y="1016.62" as="sourcePoint" />
           </mxGeometry>
@@ -136,8 +136,8 @@
           <mxGeometry relative="1" x="-0.1103" as="geometry">
             <Array as="points">
               <mxPoint x="490" y="946" />
-              <mxPoint x="602.2" y="946" />
-              <mxPoint x="602.2" y="704.8" />
+              <mxPoint x="589.7" y="946" />
+              <mxPoint x="589.7" y="704.8" />
               <mxPoint x="700" y="704.8" />
             </Array>
             <mxPoint x="700" y="736.4" as="targetPoint" />
@@ -147,8 +147,8 @@
           <mxGeometry relative="1" x="-0.0623" as="geometry">
             <Array as="points">
               <mxPoint x="420" y="885.1" />
-              <mxPoint x="583.1" y="885.1" />
-              <mxPoint x="583.1" y="228.8" />
+              <mxPoint x="576" y="885.1" />
+              <mxPoint x="576" y="228.8" />
               <mxPoint x="700" y="228.8" />
             </Array>
             <mxPoint x="591.771099044616" y="267.3855679063913" as="targetPoint" />
@@ -162,6 +162,25 @@
             <mxPoint x="560" y="1160" as="sourcePoint" />
             <mxPoint x="560" y="10" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="Bv2ARPkkX1fxkrF3tAhe-3" edge="1" parent="1" source="Bv2ARPkkX1fxkrF3tAhe-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;defaultLabelBackgroundColor=page;labelPadding=0 4;" target="Bv2ARPkkX1fxkrF3tAhe-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Bv2ARPkkX1fxkrF3tAhe-1" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="AurhController" vertex="1">
+          <mxGeometry height="52" width="140" x="70" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="Bv2ARPkkX1fxkrF3tAhe-4" edge="1" parent="1" source="Bv2ARPkkX1fxkrF3tAhe-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;defaultLabelBackgroundColor=page;labelPadding=0 4;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="HoKFMNN51XK2F71BvwmX-27">
+          <mxGeometry relative="1" x="-0.0205" as="geometry">
+            <Array as="points">
+              <mxPoint x="603.3" y="1096" />
+              <mxPoint x="603.3" y="381.1" />
+              <mxPoint x="700" y="381.1" />
+            </Array>
+            <mxPoint x="612.98" y="364.73" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Bv2ARPkkX1fxkrF3tAhe-2" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="AuthService" vertex="1">
+          <mxGeometry height="52" width="140" x="350" y="1070" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

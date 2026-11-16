@@ -39,6 +39,7 @@ nbdist/
 *.code-workspace
 
 # Environment variables and local secrets
+# Root .env supplies DB_PASSWORD through Spring's config import.
 .env
 .env.*
 !**/.env.example

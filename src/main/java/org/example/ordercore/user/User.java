@@ -1,6 +1,7 @@
 package org.example.ordercore.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import org.example.ordercore.common.util.Validation;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,6 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Pattern(regexp = Validation.EMAIL_REGEX, message = "Invalid email format")
     @Column(nullable = false, unique = true)
     private String email;
 

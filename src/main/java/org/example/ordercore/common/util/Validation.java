@@ -1,11 +1,9 @@
 package org.example.ordercore.common.util;
 
 import java.math.BigDecimal;
-import java.util.regex.Pattern;
 
 public final class Validation {
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    public static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
     private Validation() {
     }
@@ -57,7 +55,7 @@ public final class Validation {
     public static String validateEmail(String email) {
         validateNotBlankAndNotExceedingLength(email,255,"Email");
 
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
+        if (!email.matches(EMAIL_REGEX)) {
             throw new IllegalArgumentException("Invalid email format");
         }
 

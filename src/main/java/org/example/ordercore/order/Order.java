@@ -31,6 +31,7 @@ public class Order {
 
     public Order(User customer, OrderStatus status) {
         Validation.validateNotNull(customer, "Customer");
+        Validation.validateNotNull(status, "Order status");
         this.customer = customer;
         this.status = status;
     }

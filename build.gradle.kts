@@ -31,6 +31,7 @@ dependencies {
 
     // Authentication/authorization infrastructure and health monitoring.
     implementation("org.springframework.boot:spring-boot-starter-security")
+    runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.80")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

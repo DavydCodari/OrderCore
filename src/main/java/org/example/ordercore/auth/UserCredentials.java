@@ -1,7 +1,8 @@
-package org.example.ordercore.user;
+package org.example.ordercore.auth;
 
 import jakarta.persistence.*;
 import org.example.ordercore.common.util.Validation;
+import org.example.ordercore.user.User;
 
 @Entity
 @Table(name = "user_credentials")

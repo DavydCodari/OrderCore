@@ -1,5 +1,8 @@
 package org.example.ordercore.common.util;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import java.math.BigDecimal;
 
 public final class Validation {
@@ -86,5 +89,23 @@ public final class Validation {
         }
 
         return value;
+    }
+
+    public static boolean isConstraintViolation(
+            DataIntegrityViolationException exception,
+            String constraintName
+    ) {
+        Throwable cause = exception;
+
+        while (cause != null) {
+            if (cause instanceof ConstraintViolationException cve
+                    && constraintName.equals(cve.getConstraintName())) {
+                return true;
+            }
+
+            cause = cause.getCause();
+        }
+
+        return false;
     }
 }

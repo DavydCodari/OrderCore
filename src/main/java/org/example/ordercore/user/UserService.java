@@ -1,7 +1,10 @@
 package org.example.ordercore.user;
 
+import org.example.ordercore.common.util.Validation;
 import org.example.ordercore.user.dto.response.UserResponse;
+import org.example.ordercore.user.exception.EmailAlreadyExistsException;
 import org.example.ordercore.user.exception.UserNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,5 +27,37 @@ public class UserService {
                 );
 
         return userMapper.toResponse(user);
+    }
+
+    public User getUserEntity(long id) {
+        return userRepository.findById(id)
+                .orElseThrow(
+                        () -> new UserNotFoundException(id)
+                );
+    }
+
+    public UserResponse getUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException(email));
+
+
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional
+    public UserResponse createUser(String name, String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException(email);
+        }
+
+        try {
+            return userMapper.toResponse(userRepository.saveAndFlush(new User(name, email, UserRole.CUSTOMER)));
+        } catch (DataIntegrityViolationException e){
+            if (Validation.isConstraintViolation(e, "uk_users_email")){
+                throw new EmailAlreadyExistsException(email);
+            }
+
+            throw e;
+        }
     }
 }

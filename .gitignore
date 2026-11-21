@@ -1,5 +1,6 @@
 # Java / Gradle (root project and nested services)
 .gradle/
+/.gradle-local/
 .kotlin/
 build/
 out/

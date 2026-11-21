@@ -53,7 +53,7 @@ public class UserService {
         try {
             return userMapper.toResponse(userRepository.saveAndFlush(new User(name, email, UserRole.CUSTOMER)));
         } catch (DataIntegrityViolationException e){
-            if (Validation.isConstraintViolation(e, "uk_users_email")){
+            if (Validation.isConstraintViolation(e, "uq_users_email")){
                 throw new EmailAlreadyExistsException(email);
             }
 

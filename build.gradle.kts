@@ -3,7 +3,7 @@ plugins {
     id("org.springframework.boot") version "4.2.0"
 }
 
-group = "org.example"
+group = "com.davyd"
 version = "1.0-SNAPSHOT"
 
 java {

@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    jacoco
     id("org.springframework.boot") version "4.2.0"
 }
 
@@ -42,6 +43,19 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+jacoco {
+    toolVersion = "0.8.16"
+}
+
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }

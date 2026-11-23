@@ -1,5 +1,12 @@
 # OrderCore
 
+## Tests and coverage
+
+Run `./gradlew test` (Windows: `.\gradlew.bat test`) to execute the unit tests
+and generate a JaCoCo report. Open `build/reports/jacoco/test/html/index.html`
+to view coverage. An XML report is also generated in `build/reports/jacoco/test/`,
+and the pull request workflow uploads both reports as an artifact.
+
 ## Local database setup
 
 1. Run PostgreSQL on `localhost:5432` and create a database named `order_core`.

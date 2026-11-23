@@ -11,11 +11,12 @@ import java.time.Instant;
 @Table(name = "shopping_carts")
 public class ShoppingCart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "shopping_cart_id", nullable = false)
+    private Long shoppingCartId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "shopping_cart_id", nullable = false)
     private User customer;
 
     @CreationTimestamp
@@ -31,7 +32,7 @@ public class ShoppingCart {
     }
 
     public Long getId() {
-        return id;
+        return shoppingCartId;
     }
 
     public User getCustomer() {

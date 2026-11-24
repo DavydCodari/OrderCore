@@ -1,10 +1,10 @@
 package com.davyd.ordercore.auth.dto.request;
 
-import jakarta.validation.constraints.Email;
+import com.davyd.ordercore.common.validation.ValidUserEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
-        @Size(min = 3, max = 255) @NotBlank @Email String email,
+        @ValidUserEmail String email,
         @NotBlank String password) {
 }

@@ -1,8 +1,6 @@
 package com.davyd.ordercore.user.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.davyd.ordercore.common.validation.ValidUserEmail;
 
-public record ChangeEmailRequest(@NotBlank @Email @Size(max = 255) String email) {
+public record ChangeEmailRequest(@ValidUserEmail String email) {
 }

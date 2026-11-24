@@ -6,7 +6,10 @@ import com.davyd.ordercore.user.exception.EmailAlreadyExistsException;
 import com.davyd.ordercore.user.exception.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,6 +39,13 @@ public class UserService {
                 );
     }
 
+    public User getUserEntity(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new UserNotFoundException(email)
+                );
+    }
+
     public UserResponse getUser(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserNotFoundException(email));
@@ -55,6 +65,37 @@ public class UserService {
         } catch (DataIntegrityViolationException e){
             if (Validation.isConstraintViolation(e, "uq_users_email")){
                 throw new EmailAlreadyExistsException(email);
+            }
+
+            throw e;
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public UserResponse changeUserName(long userId, String newName){
+        User user = getUserEntity(userId);
+
+        user.changeName(newName);
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public UserResponse changeUserEmail(long userId, String newEmail){
+        User user = getUserEntity(userId);
+        if (Objects.equals(newEmail, user.getEmail())){
+            return userMapper.toResponse(user);
+        }
+        if (userRepository.existsByEmail(newEmail)) {
+            throw new EmailAlreadyExistsException(newEmail);
+        }
+
+        try {
+            user.changeEmail(newEmail);
+            userRepository.flush();
+            return userMapper.toResponse(user);
+        } catch (DataIntegrityViolationException e){
+            if (Validation.isConstraintViolation(e, "uq_users_email")){
+                throw new EmailAlreadyExistsException(newEmail);
             }
 
             throw e;

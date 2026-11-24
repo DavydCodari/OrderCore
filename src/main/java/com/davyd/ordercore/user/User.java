@@ -39,7 +39,7 @@ public class User {
     protected User() {
     }
 
-    public User(String name, String email, UserRole userRole){
+    public User(String name, String email, UserRole userRole) {
         Validation.validateNotBlankAndNotExceedingLength(name, MAX_NAME_LENGTH, "Name of the user");
         Validation.validateEmail(email);
         Validation.validateNotNull(userRole, "User role");
@@ -67,5 +67,15 @@ public class User {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public void changeName(String newName) {
+        Validation.validateNotBlankAndNotExceedingLength(newName, MAX_NAME_LENGTH, "Name of the user");
+        this.name = newName;
+    }
+
+    public void changeEmail(String newEmail) {
+        Validation.validateEmail(newEmail);
+        this.email = newEmail;
     }
 }

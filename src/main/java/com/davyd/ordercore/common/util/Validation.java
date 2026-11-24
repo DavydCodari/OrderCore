@@ -6,7 +6,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.math.BigDecimal;
 
 public final class Validation {
-    public static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+    public static final int MAX_EMAIL_LENGTH = 255;
+    // Keep in sync with the PostgreSQL check constraint in V8.
+    public static final String EMAIL_REGEX = "^[A-Za-z0-9+_-]+([.][A-Za-z0-9+_-]+)*@[A-Za-z0-9-]+([.][A-Za-z0-9-]+)+$";
 
     private Validation() {
     }
@@ -56,13 +58,16 @@ public final class Validation {
     }
 
     public static String validateEmail(String email) {
-        validateNotBlankAndNotExceedingLength(email,255,"Email");
-
-        if (!email.matches(EMAIL_REGEX)) {
+        if (!isValidEmail(email)) {
             throw new IllegalArgumentException("Invalid email format");
         }
 
         return email;
+    }
+
+    public static boolean isValidEmail(String email) {
+        return email != null && email.length() >= 3 && email.length() <= MAX_EMAIL_LENGTH
+                && email.matches(EMAIL_REGEX);
     }
 
     public static BigDecimal validateBigDecimal(BigDecimal value, String fieldName){

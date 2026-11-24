@@ -1,6 +1,7 @@
 package com.davyd.ordercore.model;
 
 import com.davyd.ordercore.auth.UserCredentials;
+import com.davyd.ordercore.auth.dto.request.RegisterRequest;
 import com.davyd.ordercore.cart.CartItem;
 import com.davyd.ordercore.cart.ShoppingCart;
 import com.davyd.ordercore.order.Order;
@@ -11,6 +12,10 @@ import com.davyd.ordercore.payment.PaymentStatus;
 import com.davyd.ordercore.product.Product;
 import com.davyd.ordercore.user.User;
 import com.davyd.ordercore.user.UserRole;
+import com.davyd.ordercore.user.dto.request.ChangeEmailRequest;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +53,30 @@ class EntityTest {
             }
             assertThrows(IllegalArgumentException.class, () -> new User("Alice", null, UserRole.CUSTOMER));
             assertThrows(IllegalArgumentException.class, () -> new User("Alice", "a@b.com", null));
+        }
+
+        @Test
+        void requestAndDomainUseTheSameEmailPolicy() {
+            try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+                Validator validator = factory.getValidator();
+                String[] valid = {"a@b.c", "first.last+tag@example-domain.com", "a".repeat(249) + "@b.com"};
+                String[] invalid = {null, "", "  ", "a@b", "a@.com", "a@b.", "a..b@example.com",
+                        "a b@example.com", "a".repeat(250) + "@b.com"};
+                for (String email : valid) {
+                    assertTrue(validator.validate(new ChangeEmailRequest(email)).isEmpty(), String.valueOf(email));
+                    assertTrue(validator.validate(new RegisterRequest("Alice", email, "a".repeat(17))).isEmpty());
+                    User user = new User("Alice", email, UserRole.CUSTOMER);
+                    assertTrue(validator.validate(user).isEmpty());
+                    assertDoesNotThrow(() -> user.changeEmail(email));
+                }
+                for (String email : invalid) {
+                    assertFalse(validator.validate(new ChangeEmailRequest(email)).isEmpty(), String.valueOf(email));
+                    assertFalse(validator.validate(new RegisterRequest("Alice", email, "a".repeat(17))).isEmpty());
+                    assertThrows(IllegalArgumentException.class, () -> new User("Alice", email, UserRole.CUSTOMER));
+                    User user = new User("Alice", "alice@example.com", UserRole.CUSTOMER);
+                    assertThrows(IllegalArgumentException.class, () -> user.changeEmail(email));
+                }
+            }
         }
     }
 

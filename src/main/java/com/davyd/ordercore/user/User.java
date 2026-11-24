@@ -1,7 +1,7 @@
 package com.davyd.ordercore.user;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
+import com.davyd.ordercore.common.validation.ValidUserEmail;
 import com.davyd.ordercore.common.util.Validation;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,7 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Pattern(regexp = Validation.EMAIL_REGEX, message = "Invalid email format")
+    @ValidUserEmail
     @Column(nullable = false, unique = true)
     private String email;
 

@@ -38,7 +38,7 @@ public class SecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/auth/csrf").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/csrf", "/product/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register",
                                 "/auth/login").permitAll()
                         .anyRequest().authenticated()

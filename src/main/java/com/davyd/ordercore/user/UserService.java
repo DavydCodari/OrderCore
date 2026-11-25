@@ -1,10 +1,14 @@
 package com.davyd.ordercore.user;
 
+import com.davyd.ordercore.auth.UserCredentials;
+import com.davyd.ordercore.auth.UserCredentialsRepository;
 import com.davyd.ordercore.common.util.Validation;
 import com.davyd.ordercore.user.dto.response.UserResponse;
 import com.davyd.ordercore.user.exception.EmailAlreadyExistsException;
 import com.davyd.ordercore.user.exception.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +19,15 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final UserCredentialsRepository userCredentialsRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserCredentialsRepository userCredentialsRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.userCredentialsRepository = userCredentialsRepository;
+        this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
     }
 
@@ -72,16 +80,16 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserResponse changeUserName(long userId, String newName){
-        User user = getUserEntity(userId);
+    public UserResponse changeUserName(long currentUserId, String newName){
+        User user = getUserEntity(currentUserId);
 
         user.changeName(newName);
         return userMapper.toResponse(user);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public UserResponse changeUserEmail(long userId, String newEmail){
-        User user = getUserEntity(userId);
+    public UserResponse changeUserEmail(long currentUserId, String newEmail){
+        User user = getUserEntity(currentUserId);
         if (Objects.equals(newEmail, user.getEmail())){
             return userMapper.toResponse(user);
         }
@@ -100,5 +108,17 @@ public class UserService {
 
             throw e;
         }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public UserResponse changePassword(long currentUserId, String currentPassword, String newPassword) {
+        UserCredentials userCredentials = userCredentialsRepository.findById(currentUserId)
+                .orElseThrow(() -> new UserNotFoundException(currentUserId));
+
+        if (!passwordEncoder.matches(currentPassword, userCredentials.getHashedPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        userCredentials.changeHashedPassword(passwordEncoder.encode(newPassword));
+        return userMapper.toResponse(userCredentials.getUser());
     }
 }

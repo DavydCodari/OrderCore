@@ -3,6 +3,7 @@ package com.davyd.ordercore.security.principal;
 import com.davyd.ordercore.user.UserRole;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
@@ -51,11 +52,6 @@ public final class OrderCorePrincipal
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -78,5 +74,12 @@ public final class OrderCorePrincipal
     @Override
     public void eraseCredentials() {
         passwordHash = null;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
     }
 }

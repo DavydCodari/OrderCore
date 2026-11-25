@@ -56,6 +56,24 @@ public class Product {
         this.price = price;
     }
 
+    public void update(String name, String description, BigDecimal price, Integer stockQuantity) {
+        if (name != null) {
+            this.name = Validation.validateNotBlankAndNotExceedingLength(name, MAX_NAME_LENGTH, "Name of the product");
+        }
+        if (description != null) {
+            this.description = Validation.validateNotExceedingLength(description, MAX_DESCRIPTION_LENGTH, "Description of the product");
+        }
+        if (price != null) {
+            this.price = Validation.validateBigDecimal(price, "Price");
+        }
+        if (stockQuantity != null) {
+            if (stockQuantity < 0) {
+                throw new IllegalArgumentException("Stock quantity must be nonnegative");
+            }
+            this.stockQuantity = stockQuantity;
+        }
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 package com.davyd.ordercore.auth;
 
+import com.davyd.ordercore.cart.ShoppingCartService;
 import com.davyd.ordercore.user.User;
 import com.davyd.ordercore.user.UserService;
 import com.davyd.ordercore.user.dto.response.UserResponse;
@@ -11,13 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserCredentialsRepository userCredentialsRepository;
+    private final ShoppingCartService shoppingCartService;
     private final UserService userService;
 
     public AuthService(PasswordEncoder passwordEncoder,
                        UserCredentialsRepository userCredentialsRepository,
+                       ShoppingCartService shoppingCartService,
                        UserService userService){
         this.passwordEncoder = passwordEncoder;
         this.userCredentialsRepository = userCredentialsRepository;
+        this.shoppingCartService = shoppingCartService;
         this.userService = userService;
     }
 
@@ -30,6 +34,8 @@ public class AuthService {
         User user = userService.getUserEntity(userResponse.id());
 
         UserCredentials userCredentials = new UserCredentials(user, passwordHash);
+
+        shoppingCartService.createShoppingCart(user.getId());
 
         userCredentialsRepository.save(userCredentials);
 

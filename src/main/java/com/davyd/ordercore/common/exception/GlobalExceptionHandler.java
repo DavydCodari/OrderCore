@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> notFoundHandler(NotFoundException notFoundException){
         HttpStatus status = HttpStatus.NOT_FOUND;
-        ErrorResponse errorResponse = createErrorResponse(status, notFoundException);
+        ErrorResponse errorResponse = createErrorResponse(status, "The requested resource was not found");
 
         return ResponseEntity
                 .status(status)
@@ -70,14 +70,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodValidation(HandlerMethodValidationException exception){
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        return ResponseEntity.badRequest().body(createErrorResponse(status, exception));
+        return ResponseEntity.badRequest().body(createErrorResponse(status, "Invalid request data"));
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<ErrorResponse> handleIllegalExceptions(RuntimeException exception){
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        return ResponseEntity.badRequest().body(createErrorResponse(status, exception));
+        return ResponseEntity.badRequest().body(createErrorResponse(status, "Invalid request data"));
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(status)
-                .body(createErrorResponse(status, exception));
+                .body(createErrorResponse(status, "The resource was modified concurrently; please try again"));
     }
 
     @ExceptionHandler(PessimisticLockingFailureException.class)
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(status)
-                .body(createErrorResponse(status, exception));
+                .body(createErrorResponse(status, "The resource is temporarily unavailable; please try again"));
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(status)
-                .body(createErrorResponse(status, exception));
+                .body(createErrorResponse(status, "The resource already exists"));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -117,10 +117,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(status)
-                .body(createErrorResponse(status, exception));
+                .body(createErrorResponse(status, "The request conflicts with existing data"));
     }
 
-    private ErrorResponse createErrorResponse(HttpStatus status, RuntimeException exception){
-        return new ErrorResponse(status.value(), status.getReasonPhrase(), exception.getMessage(), LocalDateTime.now());
+    private ErrorResponse createErrorResponse(HttpStatus status, String message){
+        return new ErrorResponse(status.value(), status.getReasonPhrase(), message, LocalDateTime.now());
     }
 }

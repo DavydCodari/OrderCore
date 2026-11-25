@@ -3,6 +3,7 @@ package com.davyd.ordercore.user;
 import com.davyd.ordercore.security.principal.OrderCorePrincipal;
 import com.davyd.ordercore.user.dto.request.ChangeEmailRequest;
 import com.davyd.ordercore.user.dto.request.ChangeNameRequest;
+import com.davyd.ordercore.user.dto.request.ChangePasswordRequest;
 import com.davyd.ordercore.user.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,6 +41,17 @@ public class UserController {
             @Valid @RequestBody ChangeEmailRequest request
     ) {
         UserResponse userResponse = userService.changeUserEmail(principal.getUserId(), request.email());
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @Operation(summary = "Change the current user's password")
+    @PatchMapping("/me/password")
+    public ResponseEntity<UserResponse> changePassword(
+            @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        UserResponse userResponse = userService.changePassword(
+                principal.getUserId(), request.currentPassword(), request.newPassword());
         return ResponseEntity.ok(userResponse);
     }
 }

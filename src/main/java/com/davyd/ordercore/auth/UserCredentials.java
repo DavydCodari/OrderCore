@@ -44,4 +44,9 @@ public class UserCredentials {
     public String getHashedPassword() {
         return hashedPassword;
     }
+
+    public void changeHashedPassword(String newHashedPassword){
+        this.hashedPassword = Validation.validateNotBlankAndNotExceedingLength(
+                newHashedPassword, MAX_HASHED_PASSWORD_LENGTH, "Hashed password");
+    }
 }

@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                exception.getMessage(),
+                "Invalid request data",
                 LocalDateTime.now()
         );
 

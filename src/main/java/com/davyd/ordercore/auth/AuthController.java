@@ -17,6 +17,7 @@ import com.davyd.ordercore.user.UserService;
 import com.davyd.ordercore.user.dto.response.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -68,6 +69,7 @@ public class AuthController {
             )
     )
     @GetMapping("/csrf")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CsrfToken> csrf(@Parameter(hidden = true) CsrfToken csrfToken){
         return ResponseEntity.ok(csrfToken);
     }
@@ -110,6 +112,7 @@ public class AuthController {
             }
     )
     @PostMapping("/register")
+    @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserResponse> register(
             @RequestBody
             @Valid
@@ -147,6 +150,7 @@ public class AuthController {
             }
     )
     @PostMapping("/login")
+    @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserResponse> login(
             @RequestBody
             @Valid
@@ -175,6 +179,7 @@ public class AuthController {
             }
     )
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> me(
             @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal
     ) {

@@ -15,6 +15,7 @@ import com.davyd.ordercore.user.exception.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,7 +46,7 @@ public class ShoppingCartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
         CartItem item = cartItemRepository.save(new CartItem(product, cart, quantity));
-        return new CartItemResponse(item.getId(), product.getId(), item.getQuantity(), item.getCreatedAt());
+        return shoppingCartMapper.toItemResponse(item);
     }
 
     @Transactional
@@ -64,10 +65,10 @@ public class ShoppingCartService {
     }
 
     public ShoppingCartResponse getShoppingCart(long currentUserId){
-        return shoppingCartMapper.toResponse(
-                shoppingCartRepository.findById(currentUserId).orElseThrow(() ->
-                new ShoppingCartNotFoundException(currentUserId))
-        );
+        ShoppingCart cart = shoppingCartRepository.findById(currentUserId)
+                .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));
+        return shoppingCartMapper.toResponse(cart,
+                cartItemRepository.findByShoppingCart_ShoppingCartIdOrderByIdAsc(currentUserId));
     }
 
     @Transactional
@@ -90,6 +91,6 @@ public class ShoppingCartService {
             throw e;
         }
 
-        return shoppingCartMapper.toResponse(shoppingCart);
+        return shoppingCartMapper.toResponse(shoppingCart, List.of());
     }
 }

@@ -8,7 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = @UniqueConstraint(
+        name = "uk_cart_items_cart_product", columnNames = {"shopping_cart_id", "product_id"}))
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,13 @@
 package com.davyd.ordercore.cart;
 
 import com.davyd.ordercore.cart.dto.response.ShoppingCartResponse;
+import com.davyd.ordercore.cart.dto.response.CartItemResponse;
 import com.davyd.ordercore.cart.exception.ShoppingCartAlreadyExistsException;
 import com.davyd.ordercore.cart.exception.ShoppingCartNotFoundException;
 import com.davyd.ordercore.common.util.Validation;
+import com.davyd.ordercore.product.Product;
+import com.davyd.ordercore.product.ProductRepository;
+import com.davyd.ordercore.product.exception.ProductNotFoundException;
 import com.davyd.ordercore.user.User;
 import com.davyd.ordercore.user.UserService;
 import com.davyd.ordercore.user.exception.UserNotFoundException;
@@ -16,15 +20,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final UserService userService;
+    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     private final ShoppingCartMapper shoppingCartMapper;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                UserService userService,
-                               ShoppingCartMapper shoppingCartMapper){
+                               ShoppingCartMapper shoppingCartMapper,
+                               CartItemRepository cartItemRepository,
+                               ProductRepository productRepository){
         this.shoppingCartRepository = shoppingCartRepository;
         this.userService = userService;
         this.shoppingCartMapper =shoppingCartMapper;
+        this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
+    }
+
+    @Transactional
+    public CartItemResponse addCartItem(long currentUserId, long productId, int quantity) {
+        ShoppingCart cart = shoppingCartRepository.findById(currentUserId)
+                .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        CartItem item = cartItemRepository.save(new CartItem(product, cart, quantity));
+        return new CartItemResponse(item.getId(), product.getId(), item.getQuantity(), item.getCreatedAt());
     }
 
     public ShoppingCartResponse getShoppingCart(long currentUserId){

@@ -1,6 +1,8 @@
 package com.davyd.ordercore.common.exception;
 
 import com.davyd.ordercore.common.exception.dto.ErrorResponse;
+import com.davyd.ordercore.order.exception.OrderCancellationException;
+import com.davyd.ordercore.order.exception.OrderDeliveryException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -109,6 +111,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(createErrorResponse(status, "The resource already exists"));
+    }
+
+    @ExceptionHandler(OrderCancellationException.class)
+    public ResponseEntity<ErrorResponse> handleOrderCancellation(OrderCancellationException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, exception.getMessage()));
+    }
+
+    @ExceptionHandler(OrderDeliveryException.class)
+    public ResponseEntity<ErrorResponse> handleOrderDelivery(OrderDeliveryException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, exception.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

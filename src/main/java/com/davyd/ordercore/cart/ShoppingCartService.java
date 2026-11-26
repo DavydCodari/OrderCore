@@ -5,6 +5,7 @@ import com.davyd.ordercore.cart.dto.response.CartItemResponse;
 import com.davyd.ordercore.cart.exception.ShoppingCartAlreadyExistsException;
 import com.davyd.ordercore.cart.exception.ShoppingCartNotFoundException;
 import com.davyd.ordercore.cart.exception.CartItemNotFoundException;
+import com.davyd.ordercore.cart.exception.CartItemAlreadyExistsException;
 import com.davyd.ordercore.common.util.Validation;
 import com.davyd.ordercore.product.Product;
 import com.davyd.ordercore.product.ProductRepository;
@@ -45,8 +46,15 @@ public class ShoppingCartService {
                 .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-        CartItem item = cartItemRepository.save(new CartItem(product, cart, quantity));
-        return shoppingCartMapper.toItemResponse(item);
+        try {
+            CartItem item = cartItemRepository.saveAndFlush(new CartItem(product, cart, quantity));
+            return shoppingCartMapper.toItemResponse(item);
+        } catch (DataIntegrityViolationException e) {
+            if (Validation.isConstraintViolation(e, "uk_cart_items_cart_product")) {
+                throw new CartItemAlreadyExistsException(productId);
+            }
+            throw e;
+        }
     }
 
     @Transactional

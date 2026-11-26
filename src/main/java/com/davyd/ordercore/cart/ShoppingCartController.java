@@ -1,12 +1,18 @@
 package com.davyd.ordercore.cart;
 
 import com.davyd.ordercore.cart.dto.response.ShoppingCartResponse;
+import com.davyd.ordercore.cart.dto.request.AddCartItemRequest;
+import com.davyd.ordercore.cart.dto.response.CartItemResponse;
 import com.davyd.ordercore.security.principal.OrderCorePrincipal;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,5 +30,13 @@ public class ShoppingCartController {
     public ResponseEntity<ShoppingCartResponse> getShoppingCart(
             @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal){
         return ResponseEntity.ok(shoppingCartService.getShoppingCart(principal.getUserId()));
+    }
+
+    @PostMapping("/items")
+    public ResponseEntity<CartItemResponse> addCartItem(
+            @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
+            @Valid @RequestBody AddCartItemRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                shoppingCartService.addCartItem(principal.getUserId(), request.productId(), request.quantity()));
     }
 }

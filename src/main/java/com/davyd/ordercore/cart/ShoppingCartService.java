@@ -50,6 +50,14 @@ public class ShoppingCartService {
     }
 
     @Transactional
+    public CartItemResponse updateCartItemQuantity(long currentUserId, long itemId, int quantity) {
+        CartItem item = cartItemRepository.findByIdAndShoppingCart_ShoppingCartId(itemId, currentUserId)
+                .orElseThrow(() -> new CartItemNotFoundException(itemId));
+        item.setQuantity(quantity);
+        return shoppingCartMapper.toItemResponse(item);
+    }
+
+    @Transactional
     public void deleteCartItem(long currentUserId, long itemId) {
         if (cartItemRepository.deleteItemFromCart(itemId, currentUserId) == 0) {
             throw new CartItemNotFoundException(itemId);

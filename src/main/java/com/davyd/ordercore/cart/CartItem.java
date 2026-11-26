@@ -22,12 +22,17 @@ public class CartItem {
     @JoinColumn(name = "shopping_cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
+    @Column(nullable = false)
+    private Integer quantity;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    // Used for optimistic locking to detect concurrent modifications
+    @Version
     @Column(nullable = false)
-    private Integer quantity;
+    private Long version;
 
     protected CartItem() {
     }
@@ -35,12 +40,15 @@ public class CartItem {
     public CartItem(Product product, ShoppingCart shoppingCart, int quantity) {
         Validation.validateNotNull(product, "Product");
         Validation.validateNotNull(shoppingCart, "Shopping cart");
+        this.product = product;
+        this.shoppingCart = shoppingCart;
+        setQuantity(quantity);
+    }
+
+    public void setQuantity(int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
-
-        this.product = product;
-        this.shoppingCart = shoppingCart;
         this.quantity = quantity;
     }
 

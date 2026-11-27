@@ -35,6 +35,10 @@ public class Payment {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     protected Payment() {
     }
 

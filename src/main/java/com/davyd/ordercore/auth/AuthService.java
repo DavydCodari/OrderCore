@@ -41,4 +41,9 @@ public class AuthService {
 
         return userResponse;
     }
+
+    @Transactional
+    public void deleteCredentials(long userId) {
+        userCredentialsRepository.deleteById(userId);
+    }
 }

@@ -25,6 +25,8 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import java.util.List;
+import com.davyd.ordercore.auth.UserCredentialsRepository;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,9 +36,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             SecurityContextRepository securityContextRepository,
-            CsrfTokenRepository csrfTokenRepository) throws Exception {
+            CsrfTokenRepository csrfTokenRepository,
+            UserCredentialsRepository credentialsRepository) throws Exception {
 
         return http
+                .addFilterBefore(new CredentialsExistenceFilter(credentialsRepository), AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/auth/csrf", "/product/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register",

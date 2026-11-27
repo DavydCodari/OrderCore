@@ -12,6 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import com.davyd.ordercore.auth.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,9 +27,22 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("isAuthenticated()")
 public class UserController {
     private final UserService userService;
+    private final AuthService authService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
+    }
+
+    @Operation(summary = "Close the current account", description = "Deletes login credentials and ends the session. User, cart, orders and payments are retained.")
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteAccount(
+            @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
+            HttpServletRequest request, HttpServletResponse response) {
+        authService.deleteCredentials(principal.getUserId());
+        new SecurityContextLogoutHandler().logout(request, response,
+                SecurityContextHolder.getContext().getAuthentication());
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Change the current user's name")

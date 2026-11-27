@@ -6,6 +6,7 @@ import com.davyd.ordercore.order.exception.OrderCancellationException;
 import com.davyd.ordercore.order.exception.OrderDeliveryException;
 import com.davyd.ordercore.order.exception.EmptyCartException;
 import com.davyd.ordercore.order.exception.InsufficientStockException;
+import com.davyd.ordercore.order.exception.ProductUnavailableException;
 import com.davyd.ordercore.cart.CartItemRepository;
 import com.davyd.ordercore.cart.ShoppingCartRepository;
 import com.davyd.ordercore.cart.exception.ShoppingCartNotFoundException;
@@ -48,6 +49,9 @@ public class OrderService {
         List<OrderItem> items = cartItems.stream().map(item -> {
             var product = item.getProduct();
             entityManager.lock(product, LockModeType.OPTIMISTIC);
+            if (!product.isVisible()) {
+                throw new ProductUnavailableException(product.getId());
+            }
             if (item.getQuantity() > product.getStockQuantity()) {
                 throw new InsufficientStockException(product.getId());
             }

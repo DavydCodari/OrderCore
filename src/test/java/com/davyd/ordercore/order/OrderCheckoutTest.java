@@ -7,6 +7,7 @@ import com.davyd.ordercore.cart.ShoppingCartRepository;
 import com.davyd.ordercore.cart.exception.ShoppingCartNotFoundException;
 import com.davyd.ordercore.order.exception.EmptyCartException;
 import com.davyd.ordercore.order.exception.InsufficientStockException;
+import com.davyd.ordercore.order.exception.ProductUnavailableException;
 import com.davyd.ordercore.product.Product;
 import com.davyd.ordercore.user.User;
 import com.davyd.ordercore.user.UserRole;
@@ -74,6 +75,7 @@ class OrderCheckoutTest {
         var product = mock(Product.class);
         when(product.getId()).thenReturn(7L);
         when(product.getStockQuantity()).thenReturn(2);
+        when(product.isVisible()).thenReturn(true);
         when(carts.findForUpdate(42)).thenReturn(Optional.of(cart));
         when(cartItems.findByShoppingCart_ShoppingCartIdOrderByIdAsc(42))
                 .thenReturn(List.of(new CartItem(product, cart, 3)));
@@ -82,6 +84,19 @@ class OrderCheckoutTest {
         var error = assertThrows(InsufficientStockException.class, () -> service.createOrder(42));
         assertEquals("Insufficient stock for product 7", error.getMessage());
         verify(orderItems, never()).saveAll(anyList());
+        verify(cartItems, never()).deleteItemsFromCart(anyLong());
+    }
+
+    @Test void hiddenProductRejectsCheckoutWithoutClearingCart() {
+        var cart = new ShoppingCart(new User("Alice", "alice@example.com", UserRole.CUSTOMER));
+        var product = mock(Product.class);
+        when(product.getId()).thenReturn(7L);
+        when(carts.findForUpdate(42)).thenReturn(Optional.of(cart));
+        when(cartItems.findByShoppingCart_ShoppingCartIdOrderByIdAsc(42))
+                .thenReturn(List.of(new CartItem(product, cart, 1)));
+        when(orders.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        assertThrows(ProductUnavailableException.class, () -> service.createOrder(42));
         verify(cartItems, never()).deleteItemsFromCart(anyLong());
     }
 }

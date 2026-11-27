@@ -5,6 +5,7 @@ import com.davyd.ordercore.order.exception.OrderCancellationException;
 import com.davyd.ordercore.order.exception.OrderDeliveryException;
 import com.davyd.ordercore.order.exception.EmptyCartException;
 import com.davyd.ordercore.order.exception.InsufficientStockException;
+import com.davyd.ordercore.order.exception.ProductUnavailableException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -129,6 +130,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ErrorResponse> handleInsufficientStock(InsufficientStockException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(createErrorResponse(HttpStatus.CONFLICT, exception.getMessage()));
+    }
+
+    @ExceptionHandler(ProductUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleProductUnavailable(ProductUnavailableException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(createErrorResponse(HttpStatus.CONFLICT, exception.getMessage()));
     }

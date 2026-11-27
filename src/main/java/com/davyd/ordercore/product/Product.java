@@ -29,6 +29,9 @@ public class Product {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
+    @Column(nullable = false)
+    private boolean visible = true;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -56,7 +59,7 @@ public class Product {
         this.price = price;
     }
 
-    public void update(String name, String description, BigDecimal price, Integer stockQuantity) {
+    public void update(String name, String description, BigDecimal price, Integer stockQuantity, Boolean visible) {
         if (name != null) {
             this.name = Validation.validateNotBlankAndNotExceedingLength(name, MAX_NAME_LENGTH, "Name of the product");
         }
@@ -71,6 +74,9 @@ public class Product {
                 throw new IllegalArgumentException("Stock quantity must be nonnegative");
             }
             this.stockQuantity = stockQuantity;
+        }
+        if (visible != null) {
+            this.visible = visible;
         }
     }
 
@@ -96,5 +102,9 @@ public class Product {
 
     public Integer getStockQuantity() {
         return stockQuantity;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 }

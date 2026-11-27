@@ -47,7 +47,13 @@ public class ProductController {
             @PathVariable Long id, @Valid @RequestBody UpdateProductRequest request
     ) {
         return ResponseEntity.ok(productService.updateProduct(id, request.name(), request.description(),
-                request.price(), request.stockQuantity()));
+                request.price(), request.stockQuantity(), request.visible()));
+    }
+
+    @GetMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponse> getProductForAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductForAdmin(id));
     }
 
 

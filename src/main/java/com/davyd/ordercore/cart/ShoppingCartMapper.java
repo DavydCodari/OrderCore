@@ -13,6 +13,7 @@ public class ShoppingCartMapper {
     }
 
     public CartItemResponse toItemResponse(CartItem item) {
-        return new CartItemResponse(item.getId(), item.getProduct().getId(), item.getQuantity(), item.getCreatedAt());
+        return new CartItemResponse(item.getId(), item.getProduct().getId(), item.getQuantity(),
+                item.getProduct().isVisible(), item.getCreatedAt());
     }
 }

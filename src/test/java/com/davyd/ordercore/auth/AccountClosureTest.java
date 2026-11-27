@@ -19,12 +19,15 @@ class AccountClosureTest {
         when(repository.findForAccountClosure(42L)).thenReturn(Optional.of(credentials));
         when(credentials.getHashedPassword()).thenReturn("hash");
         when(encoder.matches("correct", "hash")).thenReturn(true);
-        var service = new AuthService(encoder, repository, mock(ShoppingCartService.class), mock(UserService.class));
+        var cartService = mock(ShoppingCartService.class);
+        var service = new AuthService(encoder, repository, cartService, mock(UserService.class));
 
         assertThrows(BadCredentialsException.class, () -> service.deleteCredentials(42, "wrong"));
         verify(repository, never()).delete(any());
+        verifyNoInteractions(cartService);
         service.deleteCredentials(42, "correct");
         verify(repository).delete(credentials);
+        verify(cartService).deleteCartForAccountClosure(42);
     }
 
     @Test void missingCredentialsAreRejected() {

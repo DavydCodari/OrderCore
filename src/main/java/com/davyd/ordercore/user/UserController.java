@@ -35,7 +35,7 @@ public class UserController {
         this.authService = authService;
     }
 
-    @Operation(summary = "Close the current account", description = "Requires the current password. Deletes login credentials and ends the session. User, cart, orders and payments are retained.")
+    @Operation(summary = "Close the current account", description = "Requires the current password. Deletes login credentials, the shopping cart and its items, and ends the session. User, orders and payments are retained.")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteAccount(
             @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,

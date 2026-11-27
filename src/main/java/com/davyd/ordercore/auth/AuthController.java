@@ -27,6 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -93,8 +96,8 @@ public class AuthController {
                                     schema = @Schema(implementation = ErrorResponse.class))
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Authentication after registration failed",
+                            responseCode = "503",
+                            description = "Account created, but automatic login failed; log in separately",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
                     ),
@@ -113,7 +116,7 @@ public class AuthController {
     )
     @PostMapping("/register")
     @PreAuthorize("isAnonymous()")
-    public ResponseEntity<UserResponse> register(
+    public ResponseEntity<?> register(
             @RequestBody
             @Valid
             RegisterRequest registerRequest,
@@ -123,7 +126,20 @@ public class AuthController {
         UserResponse userResponse = authService.register(registerRequest.name(), registerRequest.email(),
                 registerRequest.password());
 
-        authenticateAndSave(registerRequest.email(), registerRequest.password(), request, response);
+        try {
+            authenticateAndSave(registerRequest.email(), registerRequest.password(), request, response);
+        } catch (RuntimeException exception) {
+            log.error("Automatic login after registration failed", exception);
+            SecurityContextHolder.clearContext();
+            var session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ErrorResponse(
+                    HttpStatus.SERVICE_UNAVAILABLE.value(), HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                    "Your account was created, but automatic login failed. Please log in.",
+                    java.time.LocalDateTime.now()));
+        }
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

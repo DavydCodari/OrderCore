@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/orders")
@@ -16,6 +17,13 @@ public class OrderController {
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(
+            @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal) {
+        OrderResponse order = orderService.createOrder(principal.getUserId());
+        return ResponseEntity.created(URI.create("/orders/" + order.id())).body(order);
     }
 
     @GetMapping("/{id}")

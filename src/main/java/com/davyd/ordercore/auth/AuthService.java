@@ -5,6 +5,7 @@ import com.davyd.ordercore.user.User;
 import com.davyd.ordercore.user.UserService;
 import com.davyd.ordercore.user.dto.response.UserResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,12 @@ public class AuthService {
     }
 
     @Transactional
-    public void deleteCredentials(long userId) {
-        userCredentialsRepository.deleteById(userId);
+    public void deleteCredentials(long userId, String currentPassword) {
+        UserCredentials credentials = userCredentialsRepository.findForAccountClosure(userId)
+                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+        if (!passwordEncoder.matches(currentPassword, credentials.getHashedPassword())) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+        userCredentialsRepository.delete(credentials);
     }
 }

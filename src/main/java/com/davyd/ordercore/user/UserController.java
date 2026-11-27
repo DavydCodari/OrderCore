@@ -4,6 +4,7 @@ import com.davyd.ordercore.security.principal.OrderCorePrincipal;
 import com.davyd.ordercore.user.dto.request.ChangeEmailRequest;
 import com.davyd.ordercore.user.dto.request.ChangeNameRequest;
 import com.davyd.ordercore.user.dto.request.ChangePasswordRequest;
+import com.davyd.ordercore.user.dto.request.DeleteAccountRequest;
 import com.davyd.ordercore.user.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,12 +35,13 @@ public class UserController {
         this.authService = authService;
     }
 
-    @Operation(summary = "Close the current account", description = "Deletes login credentials and ends the session. User, cart, orders and payments are retained.")
+    @Operation(summary = "Close the current account", description = "Requires the current password. Deletes login credentials and ends the session. User, cart, orders and payments are retained.")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteAccount(
             @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
+            @Valid @RequestBody DeleteAccountRequest body,
             HttpServletRequest request, HttpServletResponse response) {
-        authService.deleteCredentials(principal.getUserId());
+        authService.deleteCredentials(principal.getUserId(), body.currentPassword());
         new SecurityContextLogoutHandler().logout(request, response,
                 SecurityContextHolder.getContext().getAuthentication());
         return ResponseEntity.noContent().build();

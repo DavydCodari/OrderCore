@@ -11,7 +11,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/orders")
-@PreAuthorize("hasRole('CUSTOMER')")
+@PreAuthorize("isAuthenticated()")
 public class OrderController {
     private final OrderService orderService;
 

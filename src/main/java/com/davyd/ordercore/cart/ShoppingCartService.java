@@ -42,7 +42,7 @@ public class ShoppingCartService {
 
     @Transactional
     public CartItemResponse addCartItem(long currentUserId, long productId, int quantity) {
-        ShoppingCart cart = shoppingCartRepository.findById(currentUserId)
+        ShoppingCart cart = shoppingCartRepository.findForUpdate(currentUserId)
                 .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
@@ -59,6 +59,7 @@ public class ShoppingCartService {
 
     @Transactional
     public CartItemResponse updateCartItemQuantity(long currentUserId, long itemId, int quantity) {
+        lockCart(currentUserId);
         CartItem item = cartItemRepository.findByIdAndShoppingCart_ShoppingCartId(itemId, currentUserId)
                 .orElseThrow(() -> new CartItemNotFoundException(itemId));
         item.setQuantity(quantity);
@@ -67,6 +68,7 @@ public class ShoppingCartService {
 
     @Transactional
     public void deleteCartItem(long currentUserId, long itemId) {
+        lockCart(currentUserId);
         if (cartItemRepository.deleteItemFromCart(itemId, currentUserId) == 0) {
             throw new CartItemNotFoundException(itemId);
         }
@@ -74,9 +76,7 @@ public class ShoppingCartService {
 
     @Transactional
     public void clearCart(long currentUserId) {
-        if (!shoppingCartRepository.existsById(currentUserId)) {
-            throw new ShoppingCartNotFoundException(currentUserId);
-        }
+        lockCart(currentUserId);
         cartItemRepository.deleteItemsFromCart(currentUserId);
     }
 
@@ -108,5 +108,10 @@ public class ShoppingCartService {
         }
 
         return shoppingCartMapper.toResponse(shoppingCart, List.of());
+    }
+
+    private void lockCart(long customerId) {
+        shoppingCartRepository.findForUpdate(customerId)
+                .orElseThrow(() -> new ShoppingCartNotFoundException(customerId));
     }
 }

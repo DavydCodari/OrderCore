@@ -50,6 +50,7 @@ public class AuthService {
         if (!passwordEncoder.matches(currentPassword, credentials.getHashedPassword())) {
             throw new BadCredentialsException("Invalid credentials");
         }
+        shoppingCartService.deleteCartForAccountClosure(userId);
         userCredentialsRepository.delete(credentials);
     }
 }

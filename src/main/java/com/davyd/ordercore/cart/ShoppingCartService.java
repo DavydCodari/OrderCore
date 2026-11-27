@@ -80,6 +80,14 @@ public class ShoppingCartService {
         cartItemRepository.deleteItemsFromCart(currentUserId);
     }
 
+    @Transactional
+    public void deleteCartForAccountClosure(long customerId) {
+        shoppingCartRepository.findForUpdate(customerId).ifPresent(cart -> {
+            cartItemRepository.deleteItemsFromCart(customerId);
+            shoppingCartRepository.delete(cart);
+        });
+    }
+
     public ShoppingCartResponse getShoppingCart(long currentUserId){
         ShoppingCart cart = shoppingCartRepository.findById(currentUserId)
                 .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));

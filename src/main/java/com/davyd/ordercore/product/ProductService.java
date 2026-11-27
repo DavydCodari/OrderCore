@@ -21,10 +21,16 @@ public class ProductService {
     }
 
     public ProductResponse getProduct(long id){
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdAndVisibleTrue(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
         return productMapper.toResponse(product);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductResponse getProductForAdmin(long id) {
+        return productMapper.toResponse(productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id)));
     }
 
     @Transactional
@@ -36,10 +42,10 @@ public class ProductService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ProductResponse updateProduct(long id, String name, String description, BigDecimal price, Integer stockQuantity) {
+    public ProductResponse updateProduct(long id, String name, String description, BigDecimal price, Integer stockQuantity, Boolean visible) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
-        product.update(name, description, price, stockQuantity);
+        product.update(name, description, price, stockQuantity, visible);
         productRepository.flush();
         return productMapper.toResponse(product);
     }

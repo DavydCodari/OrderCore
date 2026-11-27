@@ -44,7 +44,7 @@ public class ShoppingCartService {
     public CartItemResponse addCartItem(long currentUserId, long productId, int quantity) {
         ShoppingCart cart = shoppingCartRepository.findForUpdate(currentUserId)
                 .orElseThrow(() -> new ShoppingCartNotFoundException(currentUserId));
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findWithLockByIdAndVisibleTrue(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
         try {
             CartItem item = cartItemRepository.saveAndFlush(new CartItem(product, cart, quantity));

@@ -3,6 +3,10 @@ package com.davyd.ordercore.product;
 import com.davyd.ordercore.product.dto.response.ProductResponse;
 import com.davyd.ordercore.product.exception.ProductNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,19 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
         return productMapper.toResponse(product);
+    }
+
+    public Page<ProductResponse> getProducts(Pageable pageable) {
+        return productRepository.findByVisibleTrue(productPage(pageable)).map(productMapper::toResponse);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<ProductResponse> getProductsForAdmin(Pageable pageable) {
+        return productRepository.findAll(productPage(pageable)).map(productMapper::toResponse);
+    }
+
+    private Pageable productPage(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

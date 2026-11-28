@@ -42,7 +42,7 @@ public class SecurityConfig {
         return http
                 .addFilterBefore(new CredentialsExistenceFilter(credentialsRepository), AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/auth/csrf", "/product/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/csrf", "/product", "/product/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register",
                                 "/auth/login").permitAll()
                         .anyRequest().authenticated()

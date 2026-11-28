@@ -1,5 +1,14 @@
 # OrderCore
 
+## Product listings
+
+- `GET /product` lists visible products and is available without authentication.
+- `GET /product/admin` lists all products, including hidden ones, and requires the admin role.
+
+Both endpoints accept zero-based `page` and `size` query parameters (for example,
+`/product?page=0&size=20`) and return a page with product data and pagination
+metadata. Products are ordered by ID; custom sorting is not supported.
+
 ## Tests and coverage
 
 Run `./gradlew test` (Windows: `.\gradlew.bat test`) to execute the unit tests

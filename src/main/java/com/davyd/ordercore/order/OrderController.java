@@ -3,6 +3,8 @@ package com.davyd.ordercore.order;
 import com.davyd.ordercore.order.dto.response.OrderResponse;
 import com.davyd.ordercore.security.principal.OrderCorePrincipal;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +33,15 @@ public class OrderController {
             @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
             @PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrder(principal.getUserId(), id));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getOrders(
+            @Parameter(hidden = true) @AuthenticationPrincipal OrderCorePrincipal principal,
+            @RequestParam(required = false) OrderStatus orderStatus,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(orderService.getOrders(pageable, principal.getUserId(), orderStatus));
     }
 
     @PatchMapping("/{id}/cancel")

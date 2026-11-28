@@ -13,6 +13,11 @@ import com.davyd.ordercore.cart.exception.ShoppingCartNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +72,23 @@ public class OrderService {
         Order order = orderRepository.findByIdAndCustomer_Id(orderId, currentUserId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
         return orderMapper.toResponse(order, orderItemRepository.findByOrder_IdOrderByIdAsc(orderId));
+    }
+
+    public Page<OrderResponse> getOrders(Pageable pageable, long currentUserId, OrderStatus status){
+        if (status == null){
+            return orderRepository.findByCustomer_Id(currentUserId, orderPage(pageable))
+                            .map(order -> orderMapper.toResponse(order,
+                                 orderItemRepository.findByOrder_IdOrderByIdAsc(order.getId())
+            ));
+        }
+
+        return orderRepository.findByCustomer_IdAndStatus(currentUserId, status,
+                orderPage(pageable)).map(order ->orderMapper.toResponse(order,
+                orderItemRepository.findByOrder_IdOrderByIdAsc(order.getId())));
+    }
+
+    private Pageable orderPage(Pageable pageable) {
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
     }
 
     @Transactional
